@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+
+<body>
+    <!-- Todo list app -->
+    <!-- Inspiration from Microsoft to do list app -->
+    <div>
+    <input id="inputTask" placeholder="type a task"/><br>
+    
+    <input type="number" id="getId" placeholder="type a unique id number"><br>
+    <button id="addTask" style="margin-top: 0.5rem;">+ Add Task</button>
+</div>
+    <div style="margin-top: 17px;">
+    <input placeholder="Naujas pavadinimas" id="naujasPav" type="text"><br>
+    <input type="number" placeholder="type an id to update a task" id="updateTaskById"><br>
+    <button id="updateTask">Update Task</button>
+    </div>
+
+    <div style="margin-top: 17px;">
+        <!-- <input type="number" placeholder="type an id to delete a task" id="deleteTaskById"><br>
+        <button id="deleteTask">Delete Task</button> -->
+        </div>
+
+        <h1>To Do List Window</h1>
+        <table id="taskTable">
+
+        </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
