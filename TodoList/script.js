@@ -1,132 +1,104 @@
-// Scripting side
+// Elements
+const taskTable = document.getElementById("taskTable");
 
-// Element
-
-const taskTable = document.getElementById("taskTable")
-
-// Button
-
+// Buttons
 const addTask = document.getElementById("addTask");
-
 const updateTask = document.getElementById("updateTask");
-const deleteTask = document.getElementById("deleteTask")
-// Input
+
+// Inputs
 const inputTask = document.getElementById("inputTask");
 const naujasPav = document.getElementById("naujasPav");
-// Get user's id
 const getId = document.getElementById("getId");
-
 const updateTaskById = document.getElementById("updateTaskById");
-// const deleteTaskById = document.getElementById("deleteTaskById")
 
-// Bool
+// Function to render tasks
+function renderTasks() {
+    taskTable.innerHTML = ""; // Clear table before rendering
 
-const isChecked = false
+    for (let i = 0; i < localStorage.length; i++) {
+        const id = localStorage.key(i);
+        const taskData = JSON.parse(localStorage.getItem(id));
 
+        if (!taskData) continue; // Skip invalid entries
 
+        const { newTask, isChecked } = taskData;
 
-
-
-
-addTask.addEventListener("click", () => {
-    const newTask = inputTask.value.trim()
-    
-    const id = getId.value.trim()
-
-
-    if(!newTask || !id){
-        alert("Jokiu tuščių vietu negali būti")
-        return
-    }
-
-    if(localStorage.getItem(id)){
-        alert("tas id jau paiimtas")
-        return;
-    }
-    
-    localStorage.setItem(id, JSON.stringify({ newTask, isChecked}));
-
-    // const p = document.createElement("p");
-
-
-    // const delBtn = document.createElement("button")
-    // delBtn.id = "deleteTask"
-    // console.log(delBtn)
-
-    window.location.reload()
-
-})
-
-function renderTasks(){
-    // READ
-    for(let i = 0; i < localStorage.length; i++){
-        const id = localStorage.key(i)
-        // const {newTask, isChecked} = JSON.parse(localStorage.getItem(id))
-        const JSONItems = JSON.parse(localStorage.getItem(id))
         const row = document.createElement("tr");
-        const taskCell = document.createElement("td")
-        taskCell.textContent = JSONItems.newTask
-        const checkbox = document.createElement("input")
-        checkbox.setAttribute("type", "checkbox")
-        checkbox.checked = JSONItems.isChecked
+
+        // Task text cell
+        const taskCell = document.createElement("td");
+        taskCell.textContent = newTask;
+
+        // ✅ Apply red color if checked
+        taskCell.style.color = isChecked ? "red" : "black";
+
+        // Checkbox
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = isChecked;
+
+        // ✅ Change color when checkbox toggles
+        checkbox.addEventListener("change", () => {
+            taskData.isChecked = checkbox.checked;
+            localStorage.setItem(id, JSON.stringify(taskData)); // Update state in storage
+            taskCell.style.color = checkbox.checked ? "red" : "black";
+        });
+
+        // Delete button
         const delBtn = document.createElement("button");
-        delBtn.textContent = "Delete task"
+        delBtn.textContent = "Delete task";
         delBtn.addEventListener("click", () => {
-            localStorage.removeItem(id)
-            window.location.reload()
-        
-        })   
-        
-        checkbox.addEventListener("click", () => {
-            if(checkbox.checked){
-                 checkbox.checked = true;
-            }
-            else{
-                 checkbox.checked = false;
-            }
+            localStorage.removeItem(id);
+            renderTasks(); // Re-render instead of reloading
+        });
 
-            
-        })
-
-        
-
-        row.append(taskCell, checkbox, delBtn)
-        taskTable.appendChild(row)
+        row.append(taskCell, checkbox, delBtn);
+        taskTable.appendChild(row);
     }
-    
-
 }
 
+// Add task
+addTask.addEventListener("click", () => {
+    const newTask = inputTask.value.trim();
+    const id = getId.value.trim();
+
+    if (!newTask || !id) {
+        alert("Jokiu tuščių vietų negali būti");
+        return;
+    }
+
+    if (localStorage.getItem(id)) {
+        alert("Tas ID jau paimtas");
+        return;
+    }
+
+    localStorage.setItem(id, JSON.stringify({ newTask, isChecked: false }));
+    renderTasks();
+});
+
+// ✅ Fixed Update Task (Preserves Checkbox State)
+updateTask.addEventListener("click", () => {
+    const taskId = updateTaskById.value.trim();
+    const updatedTaskText = naujasPav.value.trim();
+
+    if (!localStorage.getItem(taskId)) {
+        alert("Toks ID neegzistuoja");
+        return;
+    }
+
+    if (!updatedTaskText) {
+        alert("Naujas pavadinimas negali būti tuščias");
+        return;
+    }
+
+    const existingTask = JSON.parse(localStorage.getItem(taskId));
+    existingTask.newTask = updatedTaskText; // Update only task name, keep checkbox state
+    localStorage.setItem(taskId, JSON.stringify(existingTask)); // Save updated object
+
+    renderTasks();
+});
+
+// Initial render
 renderTasks();
 
-updateTask.addEventListener("click", () => {
-    const newTaskUpdateById = updateTaskById.value.trim()
-    const UpdateNewTask = naujasPav.value.trim()
-    
-    if(!localStorage.getItem(newTaskUpdateById)){
-        alert("Toks id neegzistuoja")
-        return
-    }
-
-    if(!updateTaskById){
-        alert("Empty")
-        return
-    }
-
-    
-
-    localStorage.setItem(newTaskUpdateById, UpdateNewTask)
-
-    window.location.reload()
-
-
-})
-
-
-
-
-
-
-
-
-console.log("Reading Script complete")
+console.log("Reading Script complete");
